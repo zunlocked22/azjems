@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Toggle ALZAMESTV</title>
+  <title>PlayZ UI TV</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://ssl.p.jwpcdn.com/player/v/8.36.6/jwplayer.js"></script>
@@ -115,88 +115,24 @@
 
     /* ✅ Responsive for phones */
     @media (max-width: 768px) {
+
       body {
         flex-direction: column;
         height: auto;
+        overflow: auto;
       }
 
       .main {
         width: 100%;
-        padding: 10px;
       }
 
       .sidebar {
         width: 100%;
         border-left: none;
         border-top: 2px solid #00ffff;
-        padding: 10px;
-        max-height: 40vh;
+        max-height: 50vh;
         overflow-y: auto;
       }
-
-      #video {
-        width: 100%;
-        max-width: 100%;
-      }
-
-      .channel-button {
-        font-size: 0.9em;
-      }
-
-      h1 {
-        font-size: 1.5em;
-      }
-    }
-
-    #channelToggle {
-      display: none;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: #00ffff;
-      color: black;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      z-index: 1000;
-    }
-
-    @media (max-width: 768px) and (orientation: landscape) {
-      .sidebar {
-        display: none;
-      }
-
-      #channelToggle {
-        display: block;
-      }
-    }
-
-    /* Toggle button styling */
-    #channelToggle {
-      display: none;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: #00ffff;
-      color: black;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      z-index: 999;
-    }
-
-    .sidebar.open {
-      display: block !important;
-      position: absolute;
-      top: 50px;
-      left: 0;
-      width: 100%;
-      background: #222;
-      z-index: 999;
-      max-height: 50vh;
-      overflow-y: auto;
     }
 
 
@@ -204,7 +140,6 @@
 </head>
 <body>
 
-  <button id="channelToggle" onclick="toggleSidebar()">☰ Channels</button>
 
   <div class="main">
     <h1></h1>
@@ -218,13 +153,6 @@
   </div>
 
   <script>
-
-    function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      sidebar.classList.toggle('open');
-    }
-
-
 
 
     const channels = {
