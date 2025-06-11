@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PlayZ</title>
+
+  <script src="https://ssl.p.jwpcdn.com/player/v/8.36.6/jwplayer.js"></script>
+  <script>jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";</script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background-color: #111;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px;
+    }
+
+    h1 {
+      margin: 20px;
+      font-size: 2em;
+      color: #00ffff;
+    }
+
+    #video {
+      width: 100%;
+      max-width: 800px;
+      border: 4px solid #00ffff;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00ffffaa;
+      aspect-ratio: 16 / 9;
+    }
+
+    footer {
+      margin: 20px;
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .sidebar {
+      width: 300px;
+      background-color: #222;
+      border-left: 2px solid #00ffff;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .sidebar input {
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #00ffff;
+      background-color: #111;
+      color: white;
+    }
+
+    .channel-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .channel-button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #333;
+      border: 1px solid #00ffff;
+      border-radius: 8px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .channel-button:hover {
+      background-color: #00ffff22;
+    }
+
+    .channel-logo {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border-radius: 6px;
+      background-color: white;
+    }
+
+    /* ✅ Responsive for phones */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .main {
+        width: 100%;
+        padding: 10px;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-left: none;
+        border-top: 2px solid #00ffff;
+        padding: 10px;
+        max-height: 40vh;
+        overflow-y: auto;
+      }
+
+      #video {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .channel-button {
+        font-size: 0.9em;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <h1></h1>
+    <div id="video"></div>
+    <footer>Powered by JW Player | Coded by AZ Jamez</footer>
+  </div>
+
+  <div class="sidebar">
+    <input type="text" id="search" placeholder="Search channel...">
+    <div class="channel-list" id="channelList"></div>
+  </div>
+
+  <script>
+    const channels = {
+      tv5: {
+        name: 'TV 5',
+        type: 'clearkey',
+        manifestUri: 'https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd',
+        keyId: '2615129ef2c846a9bbd43a641c7303ef',
+        key: '07c7f996b1734ea288641a68e1cfdc4d',
+        logo: 'https://vignette.wikia.nocookie.net/russel/images/f/f9/TV5_Logo_2011.png/revision/latest?cb=20161204035016'
+      },
+
+      kapamilya: {
+        name: 'Kapamilya Channel',
+        type: 'clearkey',
+        manifestUri: 'https://d1uf7s78uqso1e.cloudfront.net/out/v1/efa01372657648be830e7c23ff68bea2/index.mpd',
+        keyId: 'bd17afb5dc9648a39be79ee3634dd4b8',
+        key: '3ecf305d54a7729299b93a3d69c02ea5',
+        logo: 'https://th.bing.com/th/id/R.22b78ea84befc827d0d7831ce0923a06?rik=C%2fraO%2fObTVq6cg&riu=http%3a%2f%2fassets.rappler.com%2f3E8CFD536445453C9575551922F68F49%2fimg%2fFAB93EF5D0DF4FD6BE017B76302A75BD%2fKapamilya_Channel_logo.jpg&ehk=faTwUjjPyPoe7VzXcQA%2f5u4f%2f3L5FO%2f2Wl78M7LybFE%3d&risl=&pid=ImgRaw&r=0'
+      },
+
+      hbo: {
+        name: 'HBO',
+        type: 'clearkey',
+        manifestUri: 'https://cnt1-streamer9.cdn.3bbtv.com:8443/3bb/live/103/103.mpd',
+        keyId: '9c5735afb4fd402580360aed8364469c',
+        key: '128d55d9ac2b47ad85f86b5d08320179',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HBO_logo.svg/2560px-HBO_logo.svg.png'
+      },
+
+      hbofam: {
+        name: 'HBO Family',
+        type: 'clearkey',
+        manifestUri: 'https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_hbofam.mpd',
+        keyId: '872910c843294319800d85f9a0940607',
+        key: 'f79fd895b79c590708cf5e8b5c6263be',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/HBO_Family_logo.png'
+      },
+
+      hbohits: {
+        name: 'HBO Hits',
+        type: 'clearkey',
+        manifestUri: 'https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_hbohits.mpd',
+        keyId: 'b04ae8017b5b4601a5a0c9060f6d5b7d',
+        key: 'a8795f3bdb8a4778b7e888ee484cc7a1',
+        logo: 'https://cms.cignal.tv/Upload/Images/HBO%20Hits-1.jpg'
+      },
+
+      hbosig: {
+        name: 'HBO Signature',
+        type: 'clearkey',
+        manifestUri: 'https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_hbosign.mpd',
+        keyId: 'a06ca6c275744151895762e0346380f5',
+        key: '559da1b63eec77b5a942018f14d3f56f',
+        logo: 'https://www.nicepng.com/png/detail/233-2333069_hbo-signature-logo-png.png'
+      },
+
+      cinemax: {
+        name: 'Cinemax',
+        type: 'clearkey',
+        manifestUri: 'https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_cinemax.mpd',
+        keyId: 'b207c44332844523a3a3b0469e5652d7',
+        key: 'fe71aea346db08f8c6fbf0592209f955',
+        logo: 'https://logodix.com/logo/2138572.png'
+      },
+
+      cartoonnetwork: {
+        name: 'Cartoon Network',
+        type: 'clearkey',
+        manifestUri: 'http://linearjitp-playback.astro.com.my/dash-wv/linear/509/default_ott.mpd',
+        keyId: '1a05bebf706408431a390c3f9f40f410',
+        key: '89c5ff9f8e65c7fe966afbd2f9128e5f',
+        logo: 'https://logos-world.net/wp-content/uploads/2021/08/Cartoon-Network-Logo-2010-present.png'
+      },
+
+      animax: {
+        name: 'Animax',
+        type: 'clearkey',
+        manifestUri: 'https://tglmp01.akamaized.net/out/v1/de55fad9216e4fe7ad8d2eed456ba1ec/manifest.mpd',
+        keyId: 'edf1a715de9748638dd2fad75a419af2',
+        key: '2f5a3199b26e9b693ae881af7ff864cf',
+        logo: 'https://iconape.com/wp-content/files/px/285466/svg/animax-logo-logo-icon-png-svg.png'
+      },
+
+
+
+      tapactionflix: {
+        name: 'Tap Action Flix',
+        type: 'clearkey',
+        manifestUri: 'https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_tapactionflix_hd1.mpd',
+        keyId: 'bee1066160c0424696d9bf99ca0645e3',
+        key: 'f5b72bf3b89b9848de5616f37de040b7',
+        logo: 'https://github.com/tv-logo/tv-logos/blob/main/countries/philippines/tap-action-flix-ph.png?raw=true'
+      },
+
+      animexhidive: {
+        name: 'Anime X Hidive',
+        type: 'hls',
+        manifestUri: 'https://amc-anime-x-hidive-1-us.tablo.wurl.tv/playlist.m3u8',
+        logo: 'https://www.tablotv.com/wp-content/uploads/2023/12/AnimeXHIDIVE_official-768x499.png'
+      },
+
+      disneychannel: {
+        name: 'Disney Channel',
+        type: 'clearkey',
+        manifestUri: 'https://uselector.cdn.intigral-ott.net/DIS/DIS.isml/manifest.mpd',
+        keyId: '72800c62fcf2bfbedd9af27d79ed35d6',
+        key: 'b6ccb9facb2c1c81ebe4dfaab8a45195',
+        logo: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/20768ccf-f5b0-4b5e-bd31-ad33d6cf6a35/dei91io-5b3a14cb-c0c8-4033-b487-3574252333bd.jpg/v1/fill/w_1191,h_671,q_70,strp/disney_channel_logo__blue__by_littlekj20_dei91io-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzMwIiwicGF0aCI6IlwvZlwvMjA3NjhjY2YtZjViMC00YjVlLWJkMzEtYWQzM2Q2Y2Y2YTM1XC9kZWk5MWlvLTViM2ExNGNiLWMwYzgtNDAzMy1iNDg3LTM1NzQyNTIzMzNiZC5qcGciLCJ3aWR0aCI6Ijw9MTI5NiJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.CDhwbyrZ7hWQVXvarfBL8eDRzfm1mjqVps1IqVo2j3g'
+      },
+
+      crunchyroll: {
+        name: 'Crunchyroll',
+        type: 'hls',
+        manifestUri: 'https://stitcher.pluto.tv/stitch/hls/channel/65652f7fc0fc88000883537a/master.m3u8?deviceType=web&servertSideAds=false&deviceMake=safari&deviceVersion=1&deviceId=spencer&appVersion=1&deviceDNT=0&deviceModel=web&sid=6780419e-1ba9-11f0-a1fd-4e04716c5414',
+        logo: 'https://images.pluto.tv/channels/65652f7fc0fc88000883537a/colorLogoPNG.png'
+      },
+
+      tfcasia: {
+        name: 'TFC Asia',
+        type: 'clearkey',
+        manifestUri: 'https://d1facupi3cod3q.cloudfront.net/out/v1/e3633f8591e248b0af1af15a474bfa4a/index.mpd',
+        keyId: '9568cc84e1d944f38eac304517eab6fd',
+        key: 'f12142af8f39b3bab79d3679d3665ebe',
+        logo: 'https://img.mytfc.com/cmsroot/abscms/media/mytfctv/channels/iwantoriginals/iwanttfc_channel_thumbnail-768x430.png?ext=.png'
+      },
+
+     
+      crave1: {
+        name: 'Crave 1 (ClearKey)',
+        type: 'clearkey',
+        manifestUri: 'https://live-crave.video.9c9media.com/137c6e2e72e1bf67b82614c7c9b216d6f3a8c8281748505659713/fe/f/crave/crave1/manifest.mpd',
+        keyId: '4a107945066f45a9af2c32ea88be60f4',
+        key: 'df97e849d68479ec16e395feda7627d0',
+        logo: 'https://exclaim.ca/images/cravelogo.jpg'
+      },
+      crave2: {
+        name: 'Crave 2 (ClearKey)',
+        type: 'clearkey',
+        manifestUri: 'https://live-crave.video.9c9media.com/ab4332c60e19b6629129eeb38a2a6ac6db5df2571721750022187/fe/f/crave/crave2/manifest.mpd',
+        keyId: '4ac6eaaf0e5e4f94987cbb5b243b54e8',
+        key: '8bb3f2f421f6afd025fa46c784944ad6',
+        logo: 'https://the-bithub.com/crave'
+      },
+
+      cinemo: {
+        name: 'Cinemo (ClearKey)',
+        type: 'clearkey',
+        manifestUri: 'https://d1bail49udbz1k.cloudfront.net/out/v1/3a895f368f4a467c9bca0962559efc19/index.mpd',
+        keyId: 'aa8aebe35ccc4541b7ce6292efcb1bfb',
+        key: 'daab1df109d22fc5d7e3ec121ddf24e5f',
+        logo: 'https://th.bing.com/th/id/OIP.YQlhh4Welb3cggK1H7oE3QHaEF?rs=1&pid=ImgDetMain'
+      },
+
+      amc: {
+        name: 'AMC+',
+        type: 'clearkey',
+        manifestUri: 'https://a148aivottlinear-a.akamaihd.net/OTTB/PDX/clients/dash/enc/0f5clvxn6o/out/v1/d5a953bb19734fa3baa1776266887fcb/cenc.mpd',
+        keyId: '59a51164c2c915352f04066a06f6e807',
+        key: 'eba5cc362d1d63c0fe6460febca0fd11',
+        logo: 'https://shop.amc.com/cdn/shop/products/AMCP-LOGO-100011-FR-RO_1500x.png?v=1650990755'
+      },
+
+      amcthriller: {
+        name: 'AMC Thrillers',
+        type: 'hls',
+        manifestUri: 'https://436f59579436473e8168284cac5d725f.mediatailor.us-east-1.amazonaws.com/v1/master/44f73ba4d03e9607dcd9bebdcb8494d86964f1d8/Plex_RushByAMC/playlist.m3u8',
+        logo: 'https://provider-static.plex.tv/6/epg/channels/logos/gracenote/6e7af423114c9f735d17e142783f233a.png'
+      },
+
+      paramount: {
+        name: 'Paramaount Movies',
+        type: 'hls',
+        manifestUri: 'https://stitcher.pluto.tv/stitch/hls/channel/5cb0cae7a461406ffe3f5213/master.m3u8?deviceType=web&servertSideAds=false&deviceMake=safari&deviceVersion=1&deviceId=spencer&appVersion=1&deviceDNT=0&deviceModel=web&sid=4a87ffde-1b23-11f0-bc66-96648866fcff',
+        logo: 'https://logodownload.org/wp-content/uploads/2014/07/paramount-logo-1.png'
+      },
+
+
+      disneyxdd: {
+        name: 'Disney XD',
+        type: 'clearkey',
+        manifestUri: 'https://a53aivottepl-a.akamaihd.net/pdx-nitro/live/clients/dash/enc/jts4tzzv1k/out/v1/8a5b29f7068c415aa371ea95743382e6/cenc.mpd',
+        keyId: '39cebece8b36640f9ba3f248ecfdf86a',
+        key: 'fad936249e036830aa5bef41bec05326',
+        logo: 'https://logos-world.net/wp-content/uploads/2023/06/Disney-XD-Logo-2009.png'
+      },
+
+      gmapinoytv: {
+        name: 'GMA PINOY TV',
+        type: 'none',
+        manifestUri: 'https://amg01006-abs-cbn-abscbn-gma-x7-dash-abscbnono-dzsx9.amagi.tv/index.mpd',
+        logo: 'https://aphrodite.gmanetwork.com/entertainment/articles/900_675_Main_Image22_1109_-20221109181156.jpg'
+      },
+
+      astrofootball: {
+        name: 'Astro Football',
+        type: 'hls',
+        manifestUri: 'https://7pal.short.gy/astross4',
+        logo: 'https://the-bithub.com/astrosports'
+      },
+
+      wwe: {
+        name: 'WWE',
+        type: 'clearkey',
+        manifestUri: 'https://fsly.stream.peacocktv.com/Content/CMAF_CTR-4s/Live/channel(vc106wh3yw)/master.mpd',
+        keyId: '00208c93f4358213b52220898b962385',
+        key: '8ae6063167228e350dd132d4a1573102',
+        logo: 'https://i.pinimg.com/originals/34/bb/f7/34bbf762319412d2c8a0759fa7417adc.png'
+      }
+
+    };
+
+    function renderChannelButtons(filter = '') {
+      const list = document.getElementById('channelList');
+      list.innerHTML = '';
+
+      Object.entries(channels).forEach(([key, channel]) => {
+        if (channel.name.toLowerCase().includes(filter.toLowerCase())) {
+          const btn = document.createElement('button');
+          btn.className = 'channel-button';
+          btn.innerHTML = `
+            <img src="${channel.logo}" class="channel-logo" alt="${channel.name} logo">
+            <span>${channel.name}</span>
+          `;
+          btn.onclick = () => loadChannel(key);
+          list.appendChild(btn);
+        }
+      });
+    }
+
+    function loadChannel(key) {
+      const channel = channels[key];
+
+      const drmConfig = {};
+      if (channel.type === 'widevine') {
+        drmConfig.widevine = { url: channel.licenseServerUri };
+      } else if (channel.type === 'clearkey') {
+        drmConfig.clearkey = {
+          keyId: channel.keyId,
+          key: channel.key
+        };
+      }
+
+      jwplayer("video").setup({
+        file: channel.manifestUri,
+        type: channel.type === 'hls' ? 'hls' : 'dash',
+        drm: Object.keys(drmConfig).length ? drmConfig : undefined,
+        autostart: true,
+        width: "100%",
+        aspectratio: "16:9"
+      });
+
+      console.log(`Now playing: ${channel.name}`);
+    }
+
+    document.getElementById('search').addEventListener('input', function () {
+      renderChannelButtons(this.value);
+    });
+
+    renderChannelButtons();
+    loadChannel('crave1'); // Default channel
+  </script>
+</body>
+</html>
