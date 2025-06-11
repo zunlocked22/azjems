@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Al Zames Toggle</title>
+  <title>Toggle ALZAMESTV</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://ssl.p.jwpcdn.com/player/v/8.36.6/jwplayer.js"></script>
@@ -187,6 +187,19 @@
       z-index: 999;
     }
 
+    .sidebar.open {
+      display: block !important;
+      position: absolute;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      background: #222;
+      z-index: 999;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+
+
   </style>
 </head>
 <body>
@@ -207,20 +220,10 @@
   <script>
 
     function toggleSidebar() {
-
       const sidebar = document.querySelector('.sidebar');
-      if (sidebar.style.display === 'block') {
-        sidebar.style.display = 'none';
-      } else {
-        sidebar.style.display = 'block';
-        sidebar.style.position = 'absolute';
-        sidebar.style.top = '50px';
-        sidebar.style.left = '0';
-        sidebar.style.width = '100%';
-        sidebar.style.zIndex = '999';
-        sidebar.style.background = '#222';
-      }
+      sidebar.classList.toggle('open');
     }
+
 
 
 
