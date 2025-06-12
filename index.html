@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PlayZ UI TV</title>
+  <title>PlayZ ResponsiveTV</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://ssl.p.jwpcdn.com/player/v/8.36.6/jwplayer.js"></script>
@@ -21,7 +21,7 @@
       flex-direction: row;
       flex-wrap: wrap;
       height: 100vh;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .main {
@@ -61,8 +61,9 @@
       display: flex;
       flex-direction: column;
       padding: 10px;
-      overflow-y: auto;
+      max-height: 100vh;
     }
+
 
     .sidebar input {
       padding: 8px;
@@ -74,9 +75,10 @@
     }
 
     .channel-list {
-      flex: 1;
       overflow-y: auto;
+      flex-grow: 1;
     }
+
 
     .channel-button {
       width: 100%;
@@ -111,6 +113,15 @@
       background: #00ffffaa;
       border-radius: 4px;
     }
+
+    .channel-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .channel-list::-webkit-scrollbar-thumb {
+      background: #00ffffaa;
+      border-radius: 4px;
+    }
+
 
 
     /* ✅ Responsive for phones */
